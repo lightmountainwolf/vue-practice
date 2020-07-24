@@ -1,0 +1,121 @@
+<html>
+    <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+    <body>
+        <section id="todoapp" class="todoapp">
+            <header class="header">
+                <h1>todos</h1>
+                <input placeholder="What needs to be done?" class="new-todo" @keyup.enter="addTodo">
+            </header>
+            <section class="main">
+                    <input v-model="selectAllStat" id="toggle-all" type="checkbox" class="toggle-all" @click=""> 
+                    <label for="toggle-all">Mark all as complete</label>
+                <ul class="todo-list">
+                    <li class="" v-for='(item,index) in todos' v-bind:class="{completed:item.completed,editing: item == currentEditing}">
+                        <div class="view">
+                            <input type="checkbox" class="toggle" v-model="item.completed"> 
+                            <label @dblclick="currentEditing=item" >{{item.title}}</label> 
+                            <button class="destroy" @click='removeTodo(index)'></button>
+                        </div> 
+                        <input class="edit" @keyup.enter='changeTodo(item, index, $event)' :value="item.title"  @keyup.esc="currentEditing = null">
+                    </li>
+                </ul>
+            </section>
+            <footer class="footer">
+                <span class="todo-count">
+                    <strong >{{iLeft}}</strong> item left</span>
+                <ul class="filters">
+                    <li><a href="#/" class="selected">All</a></li>
+                    <li><a href="#/active">Active</a></li>
+                    <li><a href="#/completed">Completed</a></li>
+                </ul> 
+                <button class="clear-completed" @click="clearAll">Clear completed</button>
+            </footer>
+        </section>
+        <script src="vue.js"></script>
+        <script>
+            new Vue({
+                el: "#todoapp",
+                data: {
+                    currentEditing:null,
+                    todos: [{
+                        id: 1,
+                        title: '吃饭',
+                        completed: false
+                    }, {
+                        id: 2,
+                        title: '睡觉',
+                        completed: false
+                    }, {
+                        id: 3,
+                        title: '打豆豆',
+                        completed: true
+                    }]
+                },
+                methods:{
+                    clearAll(event)
+                    {
+                        this.todos.splice(0,this.todos.length)
+                    },
+                    changeTodo(item,index,event)
+                    {
+                        var textE=event.target.value.trim()
+                        if(!textE.length)
+                        {
+                           return this.todos.splice(index,1)
+                        }
+                        item.title = textE
+                        console.log(this.todos)
+                        this.currentEditing = null
+                    },
+
+                    removeTodo(index){
+                        this.todos.splice(index,1)
+                    },
+                    addTodo(event){
+                        var inp=event.target.value.trim()
+                        if(!inp.length)
+                        {
+                            return
+                        }
+                        const lastTodo = this.todos[this.todos.length - 1]
+                        const Id=lastTodo?lastTodo.id+1:1
+                        
+                        this.todos.push(
+                            {
+                                id:Id,
+                                title:inp,
+                                completed:false
+                            }
+                        )
+                        event.target.value = ''
+                    }
+                },
+                computed:{
+                    selectAllStat:{
+                        get()
+                        {
+                            return this.todos.every(item=>item.completed)
+                        },
+                        set(val)
+                        {
+                            this.todos.forEach(element => element.completed=val);
+                        }
+                    },
+                    iLeft:
+                        function(){
+                            return this.todos.filter(item=>!item.completed).length
+                        
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>
